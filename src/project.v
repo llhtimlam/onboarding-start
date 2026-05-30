@@ -1,9 +1,10 @@
 /*
- * Copyright (c) 2024 Your Name
+ * Copyright (c) 2024 Tim Lam
  * SPDX-License-Identifier: Apache-2.0
  */
 
 `default_nettype none
+`include "pwm_peripheral.v"
 
 module tt_um_uwasic_onboarding_llhtimlam #(
   parameter [6:0] MAX_ADDRESS = 7'h04
@@ -36,43 +37,43 @@ module tt_um_uwasic_onboarding_llhtimlam #(
   assign nCS  = ui_in[2];
 
   // Output: PWM Interface
-  wire OUT_0, OUT_1, OUT_2, OUT_3, OUT_4, OUT_5, OUT_6, OUT_7;
-  wire OUT_8, OUT_9, OUT_10, OUT_11, OUT_12, OUT_13, OUT_14, OUT_15;
-  assign uo_out[0]  = OUT_0;
-  assign uo_out[1]  = OUT_1;
-  assign uo_out[2]  = OUT_2;
-  assign uo_out[3]  = OUT_3;
-  assign uo_out[4]  = OUT_4;
-  assign uo_out[5]  = OUT_5;
-  assign uo_out[6]  = OUT_6;
-  assign uo_out[7]  = OUT_7;
+  //wire OUT_0, OUT_1, OUT_2, OUT_3, OUT_4, OUT_5, OUT_6, OUT_7;
+  //wire OUT_8, OUT_9, OUT_10, OUT_11, OUT_12, OUT_13, OUT_14, OUT_15;
+  //assign uo_out[0]  = OUT_0;
+  //assign uo_out[1]  = OUT_1;
+  //assign uo_out[2]  = OUT_2;
+  //assign uo_out[3]  = OUT_3;
+  //assign uo_out[4]  = OUT_4;
+  //assign uo_out[5]  = OUT_5;
+  //assign uo_out[6]  = OUT_6;
+  //assign uo_out[7]  = OUT_7;
 
-  assign uio_out[0] = OUT_8;
-  assign uio_out[1] = OUT_9;
-  assign uio_out[2] = OUT_10;
-  assign uio_out[3] = OUT_11;
-  assign uio_out[4] = OUT_12;
-  assign uio_out[5] = OUT_13;
-  assign uio_out[6] = OUT_14;
-  assign uio_out[7] = OUT_15;
+  //assign uio_out[0] = OUT_8;
+  //assign uio_out[1] = OUT_9;
+  //assign uio_out[2] = OUT_10;
+  //assign uio_out[3] = OUT_11;
+  //assign uio_out[4] = OUT_12;
+  //assign uio_out[5] = OUT_13;
+  //assign uio_out[6] = OUT_14;
+  //assign uio_out[7] = OUT_15;
 
-  assign OUT_0  = en_reg_out_7_0[0];
-  assign OUT_1  = en_reg_out_7_0[1];
-  assign OUT_2  = en_reg_out_7_0[2];
-  assign OUT_3  = en_reg_out_7_0[3];
-  assign OUT_4  = en_reg_out_7_0[4];
-  assign OUT_5  = en_reg_out_7_0[5];
-  assign OUT_6  = en_reg_out_7_0[6];
-  assign OUT_7  = en_reg_out_7_0[7];
+  //assign OUT_0  = en_reg_out_7_0[0];
+  //assign OUT_1  = en_reg_out_7_0[1];
+  //assign OUT_2  = en_reg_out_7_0[2];
+  //assign OUT_3  = en_reg_out_7_0[3];
+  //assign OUT_4  = en_reg_out_7_0[4];
+  //assign OUT_5  = en_reg_out_7_0[5];
+  //assign OUT_6  = en_reg_out_7_0[6];
+  //assign OUT_7  = en_reg_out_7_0[7];
 
-  assign OUT_8  = en_reg_out_15_8[0];
-  assign OUT_9  = en_reg_out_15_8[1];
-  assign OUT_10 = en_reg_out_15_8[2];
-  assign OUT_11 = en_reg_out_15_8[3];
-  assign OUT_12 = en_reg_out_15_8[4];
-  assign OUT_13 = en_reg_out_15_8[5];
-  assign OUT_14 = en_reg_out_15_8[6];
-  assign OUT_15 = en_reg_out_15_8[7];
+  //assign OUT_8  = en_reg_out_15_8[0];
+  //assign OUT_9  = en_reg_out_15_8[1];
+  //assign OUT_10 = en_reg_out_15_8[2];
+  //assign OUT_11 = en_reg_out_15_8[3];
+  //assign OUT_12 = en_reg_out_15_8[4];
+  //assign OUT_13 = en_reg_out_15_8[5];
+  //assign OUT_14 = en_reg_out_15_8[6];
+  //assign OUT_15 = en_reg_out_15_8[7];
 
   // SPI Clock
   wire SPI_clk = (SPI_counter == 7'd99); // count 100 for 10MHz Clk to 100kHz SPI
@@ -199,7 +200,8 @@ module tt_um_uwasic_onboarding_llhtimlam #(
       end
     end
   end
-  
+
+  // PWM 3072 Hz
   pwm_peripheral pwm_peripheral_inst (
     .clk(clk),
     .rst_n(rst_n),
@@ -208,19 +210,7 @@ module tt_um_uwasic_onboarding_llhtimlam #(
     .en_reg_pwm_7_0(en_reg_pwm_7_0),
     .en_reg_pwm_15_8(en_reg_pwm_15_8),
     .pwm_duty_cycle(pwm_duty_cycle)
-    //.out({uio_out, uo_out})
+    .out({uio_out, uo_out})
   );
 
 endmodule
-
-module pwm_peripheral (
-  input  wire         clk,
-  input  wire         rst_n,
-  input  wire [7:0]   en_reg_out_7_0, en_reg_out_15_8,
-  input  wire [7:0]   en_reg_pwm_7_0, en_reg_pwm_15_8,
-  input  wire [7:0]   pwm_duty_cycle
-  //output wire [15:0]  out
-);
-
-endmodule
-

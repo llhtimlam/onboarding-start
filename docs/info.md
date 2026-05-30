@@ -11,10 +11,36 @@ You can also include images in this folder and reference them in the markdown. E
 
 Explain how your project works
 
+SPI Peripherial with PWM
+
 ## How to test
 
 Explain how to use your project
 
+Send command from SPI Controller and output to PWM
+
+### Register Map
+
+| Address | Register Name | Description | Reset Value |
+|:---:|:---|:---|:---:|
+| **`0x00`** | `en_reg_out_7_0` | Enable output on (`uo_out[7:0]`) | `0x00` |
+| **`0x01`** | `en_reg_out_15_8` | Enable output on (`uio_out[7:0]`) | `0x00` |
+| **`0x02`** | `en_reg_pwm_7_0` | Enable PWM for (`uo_out[7:0]`)| `0x00` |
+| **`0x03`** | `en_reg_pwm_15_8` | Enable PWM for (`uio_out[7:0]`) | `0x00` |
+| **`0x04`** | `pwm_duty_cycle` | PWM Duty Cycle ( `0x00`=0%, `0xFF`=100%) | `0x00` |
+
+### Output behavior
+
+| Output Enable Bit | PWM Mode Bit | Result |
+|:---:|:---:|:---:|
+| **`0`** | **`X`** | Output `0` |
+| **`1`** | **`0`** | Output `1` |
+| **`1`** | **`1`** | Output PWM |
+
+> Note: Output Enable takes absolute precedence over PWM Mode.
+
 ## External hardware
 
 List external hardware used in your project (e.g. PMOD, LED display, etc), if any
+
+SPI Controller and PWM output interface
