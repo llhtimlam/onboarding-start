@@ -162,7 +162,7 @@ module tt_um_uwasic_onboarding_llhtimlam #(
         bit_idx         <= 4'd0;
         transaction_end <= 1'b0;
       end else if (transaction_ready && SCLK_posedge && !transaction_end) begin // Sample for the listening window when SCLK rise
-        data[bit_idx] <= COPI_sync2;
+        data[4'd15 - bit_idx] <= COPI_sync2;
         if (bit_idx == 4'd15) begin // Reset and stop listening when command end at 16th bit
           bit_idx         <= 4'b0;
           transaction_end <= 1'b1;
