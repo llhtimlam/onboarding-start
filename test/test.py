@@ -190,7 +190,7 @@ async def test_pwm_freq(dut):
     # Set Duty Cycle 1/256
     dut._log.info("Set 1-Pulse Duty cycle")
     dut._log.info("Write transaction, address 0x04, data 0x01")
-    ui_in_val = await send_spi_transaction(dut, 1, 0x03, 0x01)  # Write transaction
+    ui_in_val = await send_spi_transaction(dut, 1, 0x04, 0x01)  # Write transaction
     #assert dut.pwm_peripheral_inst.pwm_duty_cycle.value == 0x01, f"Expected 0x01, got {dut.pwm_peripheral_inst.pwm_duty_cycle.value}"
     await ClockCycles(dut.clk, 1000)
 
@@ -278,7 +278,7 @@ async def test_pwm_duty(dut):
     # Test Duty Cycle 0%
     dut._log.info("Set Duty cycle 0%")
     dut._log.info("Write transaction, address 0x04, data 0x00")
-    ui_in_val = await send_spi_transaction(dut, 1, 0x03, 0x00)  # Write transaction
+    ui_in_val = await send_spi_transaction(dut, 1, 0x04, 0x00)  # Write transaction
     #assert dut.pwm_peripheral_inst.pwm_duty_cycle.value == 0x00, f"Expected 0x00, got {dut.pwm_peripheral_inst.pwm_duty_cycle.value}"
     await ClockCycles(dut.clk, 1000) 
 
@@ -297,7 +297,7 @@ async def test_pwm_duty(dut):
     # Test Duty Cycle 50%
     dut._log.info("Set Duty cycle 50%")
     dut._log.info("Write transaction, address 0x04, data 0x7F")
-    ui_in_val = await send_spi_transaction(dut, 1, 0x03, 0x7F)  # Write transaction
+    ui_in_val = await send_spi_transaction(dut, 1, 0x04, 0x7F)  # Write transaction
     #assert dut.pwm_peripheral_inst.pwm_duty_cycle.value == 0x7F, f"Expected 0x7F, got {dut.pwm_peripheral_inst.pwm_duty_cycle.value}"
     await ClockCycles(dut.clk, 1000) 
 
@@ -348,7 +348,7 @@ async def test_pwm_duty(dut):
     # Test Duty Cycle 100%
     dut._log.info("Set Duty cycle 100%")
     dut._log.info("Write transaction, address 0x04, data 0xFF")
-    ui_in_val = await send_spi_transaction(dut, 1, 0x03, 0xFF)  # Write transaction
+    ui_in_val = await send_spi_transaction(dut, 1, 0x04, 0xFF)  # Write transaction
     #assert dut.pwm_peripheral_inst.pwm_duty_cycle.value == 0xFF, f"Expected 0xFF, got {dut.pwm_peripheral_inst.pwm_duty_cycle.value}"
     await ClockCycles(dut.clk, 1000) 
 
