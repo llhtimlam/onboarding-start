@@ -174,9 +174,9 @@ module tt_um_uwasic_onboarding_llhtimlam #(
   end
   
   // Process Hashing
-  wire       cmd_function = data[0];
-  wire [6:0] cmd_address  = data[7:1];
-  wire [7:0] cmd_data     = data[15:8];
+  wire       cmd_function = data[15];
+  wire [6:0] cmd_address  = data[14:8];
+  wire [7:0] cmd_data     = data[7:0];
 
   always @(posedge clk or negedge rst_n) begin
     if (!rst_n) begin
