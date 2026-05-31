@@ -7,6 +7,7 @@ from cocotb.triggers import RisingEdge
 from cocotb.triggers import ClockCycles
 from cocotb.types import Logic
 from cocotb.types import LogicArray
+import numpy as np
 
 async def await_half_sclk(dut):
     """Wait for the SCLK signal to go high or low."""
@@ -151,11 +152,218 @@ async def test_spi(dut):
 
 @cocotb.test()
 async def test_pwm_freq(dut):
-    # Write your test here
+    dut._log.info("Start PWM frequency test")
+    
+    # Reset
+    dut._log.info("Reset")
+    dut.ena.value = 1
+    ncs = 1
+    bit = 0
+    sclk = 0
+    dut.ui_in.value = ui_in_logicarray(ncs, bit, sclk)
+    dut.rst_n.value = 0
+    await ClockCycles(dut.clk, 5)
+    dut.rst_n.value = 1
+    await ClockCycles(dut.clk, 5)
+
+    dut._log.info("Test project behavior")
+    # Set to PWM Mode
+    dut._log.info("Write transaction, address 0x00, data 0xFF")
+    ui_in_val = await send_spi_transaction(dut, 1, 0x00, 0xFF)  # Write transaction
+    assert dut.uo_out.value == 0xFF, f"Expected 0xFF, got {dut.uo_out.value}"
+    await ClockCycles(dut.clk, 1000) 
+    
+    dut._log.info("Write transaction, address 0x01, data 0xFF")
+    ui_in_val = await send_spi_transaction(dut, 1, 0x01, 0xFF)  # Write transaction
+    assert dut.uo_out.value == 0xFF, f"Expected 0xFF, got {dut.uo_out.value}"
+    await ClockCycles(dut.clk, 1000)
+
+    dut._log.info("Write transaction, address 0x02, data 0xFF")
+    ui_in_val = await send_spi_transaction(dut, 1, 0x02, 0xFF)  # Write transaction
+    assert dut.uo_out.value == 0xFF, f"Expected 0xFF, got {dut.uo_out.value}"
+    await ClockCycles(dut.clk, 1000) 
+
+    dut._log.info("Write transaction, address 0x03, data 0xFF")
+    ui_in_val = await send_spi_transaction(dut, 1, 0x03, 0xFF)  # Write transaction
+    assert dut.uo_out.value == 0xFF, f"Expected 0xFF, got {dut.uo_out.value}"
+    await ClockCycles(dut.clk, 1000) 
+
+    # Set Duty Cycle 1/256
+    dut._log.info("Set 1-Pulse Duty cycle")
+    dut._log.info("Write transaction, address 0x04, data 0x01")
+    ui_in_val = await send_spi_transaction(dut, 1, 0x03, 0x01)  # Write transaction
+    assert dut.pwm_peripheral_inst.pwm_duty_cycle.value == 0x01, f"Expected 0x01, got {dut.pwm_peripheral_inst.pwm_duty_cycle.value}"
+    await ClockCycles(dut.clk, 1000)
+
+    # Sample all pwm pin for 100 PWM tick
+    dut._log.info("Test 100 PWM Cycle")
+    timestamp = [[] for _ in range(16)] # Initialize timestamp list of 16 pin list
+    pin_on = [0] * 16
+    for i in range(300000):
+        # Output pin
+        for j in range(8):
+            if pin_on[j] == 1: # Skip timestamp sampling until it turn low for posedge detection
+                if dut.uo_out.value[j] == 0:
+                    pin_on[j] = 0
+            elif dut.uo_out.value[j] == 1:
+                timestamp[j].append(i)
+                pin_on[j] = 1
+
+        # Bidirectional pin
+        for k in range(8):
+            if pin_on[k+8] == 1: # Skip timestamp sampling until it turn low for posedge detection
+                if dut.uio_out.value[k] == 0:
+                    pin_on[k+8] = 0
+            elif dut.uio_out.value[k] == 1:
+                timestamp[k+8].append(i)
+                pin_on[k+8] = 1
+        await ClockCycles(dut.clk, 1)
+
+    # Verify frequency tolerance (2970–3030 Hz)
+    UPPER_FREQUENCY_TOLERANCE = int(np.ceil(10000000 / 2970))
+    LOWER_FREQUENCY_TOLERANCE = int(np.floor(10000000 / 3030))
+    # Calculate PWM posedge pulse interval
+    for pin in range(16):
+        if len(timestamp[pin]) < 2: # Timeout check
+            if pin < 8:
+                assert False, f"[TIMEOUT] Output Pin {pin} did not response."
+            else:
+                assert False, f"[TIMEOUT] Bidirectional Pin {pin-8} did not response"
+        periods = np.diff(timestamp[pin])
+        within_bounds = np.all((periods >= LOWER_FREQUENCY_TOLERANCE) & (periods <= UPPER_FREQUENCY_TOLERANCE))
+        if pin < 8:
+            assert within_bounds, f"Output Pin {pin} failed PWM Frequency test! Periods: {periods}"
+        else:
+            assert within_bounds, f"Bidirectional Pin {pin-8} failed PWM Frequency test! Periods: {periods}"
     dut._log.info("PWM Frequency test completed successfully")
 
 
 @cocotb.test()
 async def test_pwm_duty(dut):
-    # Write your test here
+    dut._log.info("Start PWM Duty Cycle test")
+    
+    # Reset
+    dut._log.info("Reset")
+    dut.ena.value = 1
+    ncs = 1
+    bit = 0
+    sclk = 0
+    dut.ui_in.value = ui_in_logicarray(ncs, bit, sclk)
+    dut.rst_n.value = 0
+    await ClockCycles(dut.clk, 5)
+    dut.rst_n.value = 1
+    await ClockCycles(dut.clk, 5)
+
+    dut._log.info("Test project behavior")
+     # Set to PWM Mode
+    dut._log.info("Write transaction, address 0x00, data 0xFF")
+    ui_in_val = await send_spi_transaction(dut, 1, 0x00, 0xFF)  # Write transaction
+    assert dut.uo_out.value == 0xFF, f"Expected 0xFF, got {dut.uo_out.value}"
+    await ClockCycles(dut.clk, 1000) 
+    
+    dut._log.info("Write transaction, address 0x01, data 0xFF")
+    ui_in_val = await send_spi_transaction(dut, 1, 0x01, 0xFF)  # Write transaction
+    assert dut.uo_out.value == 0xFF, f"Expected 0xFF, got {dut.uo_out.value}"
+    await ClockCycles(dut.clk, 1000)
+
+    dut._log.info("Write transaction, address 0x02, data 0xFF")
+    ui_in_val = await send_spi_transaction(dut, 1, 0x02, 0xFF)  # Write transaction
+    assert dut.uo_out.value == 0xFF, f"Expected 0xFF, got {dut.uo_out.value}"
+    await ClockCycles(dut.clk, 1000) 
+
+    dut._log.info("Write transaction, address 0x03, data 0xFF")
+    ui_in_val = await send_spi_transaction(dut, 1, 0x03, 0xFF)  # Write transaction
+    assert dut.uo_out.value == 0xFF, f"Expected 0xFF, got {dut.uo_out.value}"
+    await ClockCycles(dut.clk, 1000) 
+
+    # Test 0%, 50%, and 100% duty cycles
+    # Test Duty Cycle 0%
+    dut._log.info("Set Duty cycle 0%")
+    dut._log.info("Write transaction, address 0x04, data 0x00")
+    ui_in_val = await send_spi_transaction(dut, 1, 0x03, 0x00)  # Write transaction
+    assert dut.pwm_peripheral_inst.pwm_duty_cycle.value == 0x00, f"Expected 0x00, got {dut.pwm_peripheral_inst.pwm_duty_cycle.value}"
+    await ClockCycles(dut.clk, 1000) 
+
+    # Sample all pwm pin for 100 PWM tick
+    dut._log.info("Test 100 PWM Cycle")
+    for i in range(300000):
+        # Output pin
+        for j in range(8):
+            assert dut.uo_out.value[j] == 1, f"Output Pin {j} failed PWM Duty Cycle (0%) test!"
+        # Bidirectional pin
+        for k in range(8):
+            assert dut.uio_out.value[k] == 1, f"Bidirectional Pin {k} failed PWM Duty Cycle (0%) test!"
+        await ClockCycles(dut.clk, 1)
+    dut._log.info("PWM Duty Cycle (0%) test completed successfully")
+
+    # Test Duty Cycle 50%
+    dut._log.info("Set Duty cycle 50%")
+    dut._log.info("Write transaction, address 0x04, data 0x7F")
+    ui_in_val = await send_spi_transaction(dut, 1, 0x03, 0x7F)  # Write transaction
+    assert dut.pwm_peripheral_inst.pwm_duty_cycle.value == 0x7F, f"Expected 0x7F, got {dut.pwm_peripheral_inst.pwm_duty_cycle.value}"
+    await ClockCycles(dut.clk, 1000) 
+
+    # Sample all pwm pin for 100 PWM tick
+    dut._log.info("Test 100 PWM Cycle")
+    timestamp = [[] for _ in range(16)] # Initialize timestamp list of 16 pin list
+    pin_on = [0] * 16
+    for i in range(300000):
+        # Output pin
+        for j in range(8):
+            if pin_on[j] == 1: # Negedge detection
+                if dut.uo_out.value[j] == 0:
+                    timestamp[j].append(i)
+                    pin_on[j] = 0
+            elif dut.uo_out.value[j] == 1: # Posedge detection
+                timestamp[j].append(i)
+                pin_on[j] = 1
+
+        # Bidirectional pin
+        for k in range(8):
+            if pin_on[k+8] == 1: # Negedge detection
+                if dut.uio_out.value[k] == 0:
+                    timestamp[k+8].append(i)
+                    pin_on[k+8] = 0
+            elif dut.uio_out.value[k] == 1: # Posedge detection
+                timestamp[k+8].append(i)
+                pin_on[k+8] = 1
+        await ClockCycles(dut.clk, 1)
+    
+    # 50% of frequency tolerance
+    UPPER_FREQUENCY_TOLERANCE = int(np.ceil(10000000 / (2970) / 2))
+    LOWER_FREQUENCY_TOLERANCE = int(np.floor(10000000 / (3030) / 2))
+    # Calculate PWM posedge/negedge interval
+    for pin in range(16):
+        if len(timestamp[pin]) < 2: # Handle timeout edge cases (always high/low).
+            if pin < 8:
+                assert False, f"[TIMEOUT] Output Pin {pin} did not response."
+            else:
+                assert False, f"[TIMEOUT] Bidirectional Pin {pin-8} did not response"
+        periods = np.diff(timestamp[pin])
+        within_bounds = np.all((periods >= LOWER_FREQUENCY_TOLERANCE) & (periods <= UPPER_FREQUENCY_TOLERANCE))
+        if pin < 8:
+            assert within_bounds, f"Output Pin {pin} failed PWM Frequency test! Periods: {periods}"
+        else:
+            assert within_bounds, f"Bidirectional Pin {pin-8} failed PWM Frequency test! Periods: {periods}"
+    dut._log.info("PWM Duty Cycle (50%) test completed successfully")
+
+    # Test Duty Cycle 100%
+    dut._log.info("Set Duty cycle 100%")
+    dut._log.info("Write transaction, address 0x04, data 0xFF")
+    ui_in_val = await send_spi_transaction(dut, 1, 0x03, 0xFF)  # Write transaction
+    assert dut.pwm_peripheral_inst.pwm_duty_cycle.value == 0xFF, f"Expected 0xFF, got {dut.pwm_peripheral_inst.pwm_duty_cycle.value}"
+    await ClockCycles(dut.clk, 1000) 
+
+    # Sample all pwm pin for 100 PWM tick
+    dut._log.info("Test 100 PWM Cycle")
+    for i in range(300000):
+        # Output pin
+        for j in range(8):
+            assert dut.uo_out.value[j] == 0, f"Output Pin {j} failed PWM Duty Cycle (100%) test!"
+        # Bidirectional pin
+        for k in range(8):
+            assert dut.uio_out.value[k] == 0, f"Bidirectional Pin {k} failed PWM Duty Cycle (100%) test!"
+        await ClockCycles(dut.clk, 1)
+    dut._log.info("PWM Duty Cycle (100%) test completed successfully")
+
     dut._log.info("PWM Duty Cycle test completed successfully")
