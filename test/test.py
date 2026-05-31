@@ -154,6 +154,10 @@ async def test_spi(dut):
 async def test_pwm_freq(dut):
     dut._log.info("Start PWM frequency test")
     
+    # Set the clock period to 100 ns (10 MHz)
+    clock = Clock(dut.clk, 100, units="ns")
+    cocotb.start_soon(clock.start())
+
     # Reset
     dut._log.info("Reset")
     dut.ena.value = 1
@@ -241,6 +245,10 @@ async def test_pwm_freq(dut):
 @cocotb.test()
 async def test_pwm_duty(dut):
     dut._log.info("Start PWM Duty Cycle test")
+    
+    # Set the clock period to 100 ns (10 MHz)
+    clock = Clock(dut.clk, 100, units="ns")
+    cocotb.start_soon(clock.start())
     
     # Reset
     dut._log.info("Reset")
