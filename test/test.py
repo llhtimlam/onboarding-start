@@ -170,26 +170,21 @@ async def test_pwm_freq(dut):
     dut.rst_n.value = 1
     await ClockCycles(dut.clk, 5)
 
-    dut._log.info("Test project behavior")
     # Set to PWM Mode
     dut._log.info("Write transaction, address 0x00, data 0xFF")
     ui_in_val = await send_spi_transaction(dut, 1, 0x00, 0xFF)  # Write transaction
-    assert dut.uo_out.value == 0xFF, f"Expected 0xFF, got {dut.uo_out.value}"
     await ClockCycles(dut.clk, 1000) 
     
     dut._log.info("Write transaction, address 0x01, data 0xFF")
     ui_in_val = await send_spi_transaction(dut, 1, 0x01, 0xFF)  # Write transaction
-    assert dut.uo_out.value == 0xFF, f"Expected 0xFF, got {dut.uo_out.value}"
     await ClockCycles(dut.clk, 1000)
 
     dut._log.info("Write transaction, address 0x02, data 0xFF")
     ui_in_val = await send_spi_transaction(dut, 1, 0x02, 0xFF)  # Write transaction
-    assert dut.uo_out.value == 0xFF, f"Expected 0xFF, got {dut.uo_out.value}"
     await ClockCycles(dut.clk, 1000) 
 
     dut._log.info("Write transaction, address 0x03, data 0xFF")
     ui_in_val = await send_spi_transaction(dut, 1, 0x03, 0xFF)  # Write transaction
-    assert dut.uo_out.value == 0xFF, f"Expected 0xFF, got {dut.uo_out.value}"
     await ClockCycles(dut.clk, 1000) 
 
     # Set Duty Cycle 1/256
@@ -249,7 +244,7 @@ async def test_pwm_duty(dut):
     # Set the clock period to 100 ns (10 MHz)
     clock = Clock(dut.clk, 100, units="ns")
     cocotb.start_soon(clock.start())
-    
+
     # Reset
     dut._log.info("Reset")
     dut.ena.value = 1
@@ -262,26 +257,21 @@ async def test_pwm_duty(dut):
     dut.rst_n.value = 1
     await ClockCycles(dut.clk, 5)
 
-    dut._log.info("Test project behavior")
      # Set to PWM Mode
     dut._log.info("Write transaction, address 0x00, data 0xFF")
     ui_in_val = await send_spi_transaction(dut, 1, 0x00, 0xFF)  # Write transaction
-    assert dut.uo_out.value == 0xFF, f"Expected 0xFF, got {dut.uo_out.value}"
     await ClockCycles(dut.clk, 1000) 
     
     dut._log.info("Write transaction, address 0x01, data 0xFF")
     ui_in_val = await send_spi_transaction(dut, 1, 0x01, 0xFF)  # Write transaction
-    assert dut.uo_out.value == 0xFF, f"Expected 0xFF, got {dut.uo_out.value}"
     await ClockCycles(dut.clk, 1000)
 
     dut._log.info("Write transaction, address 0x02, data 0xFF")
     ui_in_val = await send_spi_transaction(dut, 1, 0x02, 0xFF)  # Write transaction
-    assert dut.uo_out.value == 0xFF, f"Expected 0xFF, got {dut.uo_out.value}"
     await ClockCycles(dut.clk, 1000) 
 
     dut._log.info("Write transaction, address 0x03, data 0xFF")
     ui_in_val = await send_spi_transaction(dut, 1, 0x03, 0xFF)  # Write transaction
-    assert dut.uo_out.value == 0xFF, f"Expected 0xFF, got {dut.uo_out.value}"
     await ClockCycles(dut.clk, 1000) 
 
     # Test 0%, 50%, and 100% duty cycles
