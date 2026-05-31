@@ -96,6 +96,8 @@ module tt_um_uwasic_onboarding_llhtimlam #(
   reg nCS_meta, nCS_sync1, nCS_sync2;
   reg SCLK_meta, SCLK_sync1, SCLK_sync2;
   reg COPI_meta, COPI_sync1, COPI_sync2;
+  wire nCS_negedge, nCS_posedge;
+  wire SCLK_negedge, SCLK_posedge;
   reg transaction_ready, transaction_end, transaction_complete;
 
   // nCS
