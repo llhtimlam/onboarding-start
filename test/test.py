@@ -287,10 +287,10 @@ async def test_pwm_duty(dut):
     for i in range(300000):
         # Output pin
         for j in range(8):
-            assert dut.uo_out.value[j] == 1, f"Output Pin {j} failed PWM Duty Cycle (0%) test!"
+            assert dut.uo_out.value[j] == 0, f"Output Pin {j} failed PWM Duty Cycle (0%) test!"
         # Bidirectional pin
         for k in range(8):
-            assert dut.uio_out.value[k] == 1, f"Bidirectional Pin {k} failed PWM Duty Cycle (0%) test!"
+            assert dut.uio_out.value[k] == 0, f"Bidirectional Pin {k} failed PWM Duty Cycle (0%) test!"
         await ClockCycles(dut.clk, 1)
     dut._log.info("PWM Duty Cycle (0%) test completed successfully")
 
@@ -357,10 +357,10 @@ async def test_pwm_duty(dut):
     for i in range(300000):
         # Output pin
         for j in range(8):
-            assert dut.uo_out.value[j] == 0, f"Output Pin {j} failed PWM Duty Cycle (100%) test!"
+            assert dut.uo_out.value[j] == 1, f"Output Pin {j} failed PWM Duty Cycle (100%) test!"
         # Bidirectional pin
         for k in range(8):
-            assert dut.uio_out.value[k] == 0, f"Bidirectional Pin {k} failed PWM Duty Cycle (100%) test!"
+            assert dut.uio_out.value[k] == 1, f"Bidirectional Pin {k} failed PWM Duty Cycle (100%) test!"
         await ClockCycles(dut.clk, 1)
     dut._log.info("PWM Duty Cycle (100%) test completed successfully")
 
