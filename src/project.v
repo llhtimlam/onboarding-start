@@ -4,7 +4,7 @@
  */
 
 `default_nettype none
-`include "pwm_peripheral.v"
+//`include "pwm_peripheral.v"
 
 module tt_um_uwasic_onboarding_llhtimlam #(
   parameter [6:0] MAX_ADDRESS = 7'h04
@@ -97,7 +97,8 @@ module tt_um_uwasic_onboarding_llhtimlam #(
   reg SCLK_meta, SCLK_sync1, SCLK_sync2;
   reg COPI_meta, COPI_sync1, COPI_sync2;
   wire nCS_negedge, nCS_posedge;
-  wire SCLK_negedge, SCLK_posedge;
+  wire SCLK_posedge;
+  //wire SCLK_negedge;
   reg transaction_ready, transaction_end, transaction_complete;
 
   // nCS
@@ -115,7 +116,7 @@ module tt_um_uwasic_onboarding_llhtimlam #(
     SCLK_sync1 <= SCLK_meta;
     SCLK_sync2 <= SCLK_sync1;
   end
-  assign SCLK_negedge = (!SCLK_sync1 && SCLK_sync2);
+  //assign SCLK_negedge = (!SCLK_sync1 && SCLK_sync2);
   assign SCLK_posedge = (SCLK_sync1 && !SCLK_sync2);
 
   // COPI
